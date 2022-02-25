@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import Header from "./components/Header";
+import Userhint from "./components/Userhint";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       searchTerm: "",
+      hintText: "",
     };
   }
 
@@ -14,6 +16,7 @@ class App extends Component {
     this.setState((prevState, props) => ({
       ...prevState,
       searchTerm: value,
+      hintText: value.length > 2 ? `Hit enter to search ${value}` : "",
     }));
     if (value.length > 2) {
     }
@@ -40,6 +43,7 @@ class App extends Component {
             value={searchTerm}
           />
         </div>
+        <Userhint {...this.state} />
       </div>
     );
   }
