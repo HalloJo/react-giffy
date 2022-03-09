@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Header from "./components/Header";
+import Gif from "./components/Gif";
 import Userhint from "./components/Userhint";
 
 class App extends Component {
@@ -9,8 +10,14 @@ class App extends Component {
       searchTerm: "",
       hintText: "",
       gif: "",
+      gifs: [],
     };
   }
+
+  randomChoice = (arr) => {
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    return arr[randomIndex];
+  };
 
   searchGiphy = async (searchTerm) => {
     try {
@@ -18,10 +25,12 @@ class App extends Component {
         `https://api.giphy.com/v1/gifs/search?api_key=rGcYJZqhoYZBJXKR0TKyTDuyBku64SLR&q=${searchTerm}&limit=25&offset=0&rating=g&lang=en`
       );
       const { data } = await response.json();
+      const randomGif = this.randomChoice(data);
 
       this.setState((prevState, props) => ({
         ...prevState,
-        gif: data[0],
+        gif: randomGif,
+        gifs: [...prevState.gifs, randomGif],
       }));
     } catch (error) {}
   };
@@ -34,6 +43,7 @@ class App extends Component {
       hintText: value.length > 2 ? `Hit enter to search ${value}` : "",
     }));
   };
+
   handleKeyPress = (event) => {
     const { value } = event.target;
     if (value.length > 2 && event.key === "Enter") {
@@ -48,14 +58,9 @@ class App extends Component {
       <div className="page">
         <Header />
         <div className="search grid">
-          {gif && (
-            <video
-              className="grid-item video"
-              autoPlay
-              loop
-              src={gif.images.original.mp4}
-            />
-          )}
+          {this.state.gifs.map((gif) => (
+            <Gif {...gif} />
+          ))}
           <input
             className="input grid-item"
             placeholder="Type something.."
