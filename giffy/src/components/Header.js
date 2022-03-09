@@ -1,8 +1,15 @@
 import React from "react";
+import clearButton from "../images/close-icon.svg";
 
-const Header = () => (
+const Header = ({ clearSearch, hasResults }) => (
   <header className="header grid">
-    <h1 className="title">Jiffy</h1>
+    {hasResults ? (
+      <button onClick={clearSearch}>
+        <img src={clearButton} />
+      </button>
+    ) : (
+      <h1 className="title">Jiffy</h1>
+    )}
   </header>
 );
 

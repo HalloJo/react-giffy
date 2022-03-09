@@ -10,7 +10,6 @@ class App extends Component {
       loading: false,
       searchTerm: "",
       hintText: "",
-      gif: "",
       gifs: [],
     };
   }
@@ -38,7 +37,6 @@ class App extends Component {
 
       this.setState((prevState, props) => ({
         ...prevState,
-        gif: randomGif,
         gifs: [...prevState.gifs, randomGif],
         loading: false,
         hintText: `Hit enter to see more ${searchTerm}`,
@@ -68,12 +66,22 @@ class App extends Component {
     }
   };
 
+  clearSearch = () => {
+    this.setState((prevState, props) => ({
+      ...prevState,
+      searchTerm: "",
+      hintText: "",
+      gifs: [],
+    }));
+  };
+
   render() {
-    const { searchTerm, gif } = this.state;
+    const { searchTerm, gifs } = this.state;
+    const hasResults = gifs.length;
 
     return (
       <div className="page">
-        <Header />
+        <Header clearSearch={this.clearSearch} hasResults={hasResults} />
         <div className="search grid">
           {this.state.gifs.map((gif) => (
             <Gif {...gif} />
