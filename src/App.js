@@ -73,6 +73,7 @@ class App extends Component {
       hintText: "",
       gifs: [],
     }));
+    this.textInput.focus();
   };
 
   render() {
@@ -92,6 +93,9 @@ class App extends Component {
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
             value={searchTerm}
+            ref={(input) => {
+              this.textInput = input;
+            }}
           />
         </div>
         <Userhint {...this.state} />
