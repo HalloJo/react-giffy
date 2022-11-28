@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Header from "./components/Header";
 import Gif from "./components/Gif";
 import Userhint from "./components/Userhint";
