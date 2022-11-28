@@ -1,28 +1,26 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import Header from "./components/Header";
 import Gif from "./components/Gif";
 import Userhint from "./components/Userhint";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      searchTerm: "",
-      hintText: "",
-      gifs: [],
-    };
-  }
+const App = () => {
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [hintText, setHintText] = useState("");
+  const [gifs, setGifs] = useState([]);
 
-  randomChoice = (arr) => {
-    const randomIndex = Math.floor(Math.random() * arr.length);
-    return arr[randomIndex];
+  const inputRef = useRef(null);
+
+  const hasResults = gifs.length;
+
+  const randomChoice = (array) => {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
   };
 
-  searchGiphy = async (searchTerm) => {
-    this.setState({
-      loading: true,
-    });
+  const searchGiphy = async (searchTerm) => {
+    setLoading(true);
+
     try {
       const response = await fetch(
         `https://api.giphy.com/v1/gifs/search?api_key=rGcYJZqhoYZBJXKR0TKyTDuyBku64SLR&q=${searchTerm}&limit=25&offset=0&rating=g&lang=en`
@@ -34,75 +32,57 @@ class App extends Component {
         throw errorMessage;
       }
 
-      const randomGif = this.randomChoice(data);
+      const randomGif = randomChoice(data);
 
-      this.setState((prevState, props) => ({
-        ...prevState,
-        gifs: [...prevState.gifs, randomGif],
-        loading: false,
-        hintText: `Hit enter to see more ${searchTerm}`,
-      }));
+      setGifs([...gifs, randomGif]);
+      setLoading(false);
+      setHintText(`Hit enter to see more ${searchTerm}`);
     } catch (error) {
-      this.setState((prevState, props) => ({
-        ...prevState,
-        hintText: error,
-        loading: false,
-      }));
+      setHintText(error);
+      setLoading(false);
     }
   };
 
-  handleChange = (event) => {
+  const handleChange = (event) => {
     const { value } = event.target;
-    this.setState((prevState, props) => ({
-      ...prevState,
-      searchTerm: value,
-      hintText: value.length > 2 ? `Hit enter to search ${value}` : "",
-    }));
+
+    setSearchTerm(value);
+    setHintText(value.length > 2 ? `Hit enter to search ${value}` : "");
   };
 
-  handleKeyPress = (event) => {
+  const handleKeyPress = (event) => {
     const { value } = event.target;
     if (value.length > 2 && event.key === "Enter") {
-      this.searchGiphy(value);
+      searchGiphy(value);
     }
   };
 
-  clearSearch = () => {
-    this.setState((prevState, props) => ({
-      ...prevState,
-      searchTerm: "",
-      hintText: "",
-      gifs: [],
-    }));
-    this.textInput.focus();
+  const clearSearch = () => {
+    setSearchTerm("");
+    setHintText("");
+    setGifs([]);
+    inputRef.current.focus();
   };
 
-  render() {
-    const { searchTerm, gifs } = this.state;
-    const hasResults = gifs.length;
-
-    return (
-      <div className="page">
-        <Header clearSearch={this.clearSearch} hasResults={hasResults} />
-        <div className="search grid">
-          {this.state.gifs.map((gif) => (
-            <Gif {...gif} />
-          ))}
-          <input
-            className="input grid-item"
-            placeholder="Type something.."
-            onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-            value={searchTerm}
-            ref={(input) => {
-              this.textInput = input;
-            }}
-          />
-        </div>
-        <Userhint {...this.state} />
+  return (
+    <div className="page">
+      <Header clearSearch={clearSearch} hasResults={hasResults} />
+      <div className="search grid">
+        {gifs.map((gif) => (
+          <Gif key={gif.id} {...gif} />
+        ))}
+        <input
+          className="input grid-item"
+          placeholder="Type something.."
+          onChange={handleChange}
+          onKeyPress={handleKeyPress}
+          value={searchTerm}
+          ref={inputRef}
+        />
       </div>
-    );
-  }
-}
+      <Userhint loading={loading} hintText={hintText} />
+    </div>
+  );
+};
 
 export default App;
