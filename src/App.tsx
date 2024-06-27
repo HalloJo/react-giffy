@@ -2,15 +2,7 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import Header from "./components/Header";
 import Gif from "./components/Gif";
 import Userhint from "./components/Userhint";
-
-type GifProps = {
-  id: string;
-  images: {
-    original: {
-      mp4: string;
-    };
-  };
-};
+import { GifProps } from "./types/types";
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(false);

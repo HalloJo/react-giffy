@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-
-type GifProps = {
-  images: {
-    original: {
-      mp4: string;
-    };
-  };
-};
+import { GifProps } from "../types/types";
 
 const Gif = ({ images }: GifProps) => {
   const [loaded, setLoaded] = useState(false);
