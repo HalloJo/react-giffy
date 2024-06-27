@@ -6,6 +6,7 @@ import { GifProps } from "./types/types";
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [limit, setLimit] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [hintText, setHintText] = useState<string>("");
   const [gifs, setGifs] = useState<GifProps[]>([]);
@@ -24,7 +25,7 @@ const App = () => {
 
     try {
       const response = await fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=rGcYJZqhoYZBJXKR0TKyTDuyBku64SLR&q=${searchTerm}&limit=25&offset=0&rating=g&lang=en`
+        `https://api.giphy.com/v1/gifs/search?api_key=rGcYJZqhoYZBJXKR0TKyTDuyBku64SLR&q=${searchTerm}&limit=30&offset=0&rating=g&lang=en`
       );
       const { data } = await response.json();
 
@@ -33,10 +34,15 @@ const App = () => {
         throw errorMessage;
       }
 
-      const randomGif = randomChoice(data);
+      const uniqueGifs = data.filter(
+        (gif: GifProps) =>
+          !gifs.some((existingGif) => existingGif.id === gif.id)
+      );
 
-      setGifs([...gifs, randomGif]);
-      console.log(gifs);
+      const randomGif = randomChoice(uniqueGifs);
+
+      setGifs((previousGifs) => [...previousGifs, randomGif]);
+
       setLoading(false);
       setHintText(`Hit enter to see more ${searchTerm}`);
     } catch (error: unknown) {
@@ -55,7 +61,13 @@ const App = () => {
   const handleKeyPress = (event: React.KeyboardEvent) => {
     const target = event.target as HTMLInputElement;
     if (target.value && target.value.length > 2 && event.key === "Enter") {
-      searchGiphy(target.value);
+      if (gifs.length === 25) {
+        clearSearch();
+        setLimit(true);
+      } else {
+        setLimit(false);
+        searchGiphy(target.value);
+      }
     }
   };
 
@@ -68,7 +80,7 @@ const App = () => {
 
   return (
     <div className="page">
-      <Header clearSearch={clearSearch} hasResults={hasResults} />
+      <Header clearSearch={clearSearch} hasResults={hasResults} limit={limit} />
       <div className="search grid">
         {gifs.map((gif) => (
           <Gif key={gif.id} {...gif} />
