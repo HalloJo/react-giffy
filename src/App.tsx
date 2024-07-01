@@ -23,9 +23,11 @@ const App = () => {
   const searchGiphy = async (searchTerm: string) => {
     setLoading(true);
 
+    const apiKey = process.env.REACT_APP_GIPHY_API_KEY;
+
     try {
       const response = await fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=rGcYJZqhoYZBJXKR0TKyTDuyBku64SLR&q=${searchTerm}&limit=30&offset=0&rating=g&lang=en`
+        `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${searchTerm}&limit=30&offset=0&rating=g&lang=en`
       );
       const { data } = await response.json();
 
