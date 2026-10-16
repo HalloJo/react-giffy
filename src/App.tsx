@@ -23,7 +23,7 @@ const App = () => {
   const searchGiphy = async (searchTerm: string) => {
     setLoading(true);
 
-    const apiKey = process.env.REACT_APP_GIPHY_API_KEY;
+    const apiKey = import.meta.env.VITE_API_URL;
 
     try {
       const response = await fetch(
